@@ -96,6 +96,8 @@ void flip(int binary[], int i) {
 		binary[i] = 1;
 	}
 }
+// I had issues with this until I relised I was casting an unsigned long to an
+// int
 unsigned long calcDecimal(int a, int b, int c, int d) {
 	// While this is hand coded the logic is not mine
 	// I used Gemini 3.6 flash on 9/7/26
