@@ -58,6 +58,8 @@ void accumilate(int &a, int &b, int &c, int &d, int colonCount, int &port,
 	switch (dotCount) {
 		// the mess is that we are essentually going in reverse so we need to
 		// multiply the existing by ten then add the new one to it
+		// ie
+		// for 192, 1, 1*10+9=19, 19*10+2=192
 	case (0):
 		a *= 10;
 		a += realnum;
@@ -95,7 +97,7 @@ void flip(int binary[], int i) {
 	}
 }
 unsigned long calcDecimal(int a, int b, int c, int d) {
-	// While this is hand coded the logic is not
+	// While this is hand coded the logic is not mine
 	// I used Gemini 3.6 flash on 9/7/26
 	// I used it to get the forumale for getting the decimal value of the ip
 	// address I asked:  "how do you get the 32 bit decimal of an ip
@@ -181,7 +183,15 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 		// [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(:[0-9]{1,5})?
 		// their is probably a better way to to do this but this techinally
 		// works
-
+		// one rule is that if the previues one is valid start, this one cannot
+		// be
+		if (i != 0 && isdigit(str[i]) && validChar(str[i - 1])) {
+			continue;
+		}
+		// it can only be a valid start if it is a digit
+		if (!isdigit(str[i])) {
+			continue;
+		}
 		// store current number of numbers
 		int numCount = 0;
 		// store current number of dots
@@ -279,6 +289,9 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 
 		if (correct) {
 			// make sure a b c and d are all in the range 0-255
+			// we need to do this now because at the next step we assume that
+			// values are in these ranges so if we don't reject them we will
+			// have out of bounds issues
 			if (a < 0 || a > 255 || b < 0 || b > 255 || c < 0 || c > 255 ||
 				d < 0 || d > 255 || port < 0 || port > 65535) {
 				// oops its actually wrong
