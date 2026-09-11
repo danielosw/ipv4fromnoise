@@ -300,25 +300,32 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 				continue;
 			}
 			outAddress = calcDecimal(a, b, c, d);
-			cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c
-				 << '.' << d << " (decimal value:" << outAddress << ", port: ";
+
 			if (portexists) {
 				outPort = port;
-				cout << port;
 			} else {
 				outPort = -1;
-				cout << "none";
 			}
-			cout << ")\n" << endl;
 			return true;
 		}
 	}
-	cout << "Invalid input: no valid IPv4 address found" << "\n" << endl;
 	outPort = -1;
 	outAddress = 0;
 	return false;
 };
+// Takes in outAddress: a 32 bit represention of the ip, and outport
+// and prints the correct string
+void finalprint(unsigned long &outAddress, int &outPort) {
 
+	cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c << '.' << d
+		 << " (decimal value:" << outAddress << ", port: ";
+	if (outPort != -1) {
+		cout << outPort;
+	} else {
+		cout << "none";
+	}
+	cout << ")\n" << endl;
+}
 int main() {
 	// I used Gemini 3.6 flash on 9/7/26
 	// prompt: "how do I get user input with spaces in c++"
@@ -343,6 +350,11 @@ int main() {
 		}
 		unsigned long outAddress = 0;
 		int outPort = 0;
-		extractIPv4(holding, outAddress, outPort);
+		if (extractIPv4(holding, outAddress, outPort)) {
+			finalprint(outAddress, outPort);
+		} else {
+			cout << "Invalid input: no valid IPv4 address found" << "\n"
+				 << endl;
+		}
 	}
 }
