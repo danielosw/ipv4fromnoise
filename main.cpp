@@ -153,7 +153,6 @@ unsigned long calcDecimal(int a, int b, int c, int d) {
 	std::memcpy(finalbinanry + 8, binaryb, sizeof(binaryb));
 	std::memcpy(finalbinanry + 16, binaryc, sizeof(binaryc));
 	std::memcpy(finalbinanry + 24, binaryd, sizeof(binaryd));
-
 	unsigned long final = 0;
 	int count = 0;
 	for (int i = 31; i >= 0; i--) {
@@ -313,19 +312,25 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 	outAddress = 0;
 	return false;
 };
+int binaryToDecimal(int binary[8]) {
+	unsigned long a = 0;
+	int count = 0;
+	for (int i = 7; i >= 0; i--) {
+		if (binary[i] == 0) {
+			count += 1;
+			continue;
+		} else {
+			a += pow(2, count);
+			count += 1;
+			continue;
+		}
+	}
+	return a;
+}
 // Takes in outAddress: a 32 bit represention of the ip, and outport
 // and prints the correct string
-void finalprint(unsigned long &outAddress, int &outPort) {
+void finalprint(unsigned long &outAddress, int &outPort) {}
 
-	cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c << '.' << d
-		 << " (decimal value:" << outAddress << ", port: ";
-	if (outPort != -1) {
-		cout << outPort;
-	} else {
-		cout << "none";
-	}
-	cout << ")\n" << endl;
-}
 int main() {
 	// I used Gemini 3.6 flash on 9/7/26
 	// prompt: "how do I get user input with spaces in c++"
@@ -351,7 +356,36 @@ int main() {
 		unsigned long outAddress = 0;
 		int outPort = 0;
 		if (extractIPv4(holding, outAddress, outPort)) {
-			finalprint(outAddress, outPort);
+
+			// we are basiclly reversing calc decimal
+			// so first decimal -> binary
+			int binary[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+							  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+			for (size_t i = 0; i < outAddress; i++) {
+				flip(binary, 31);
+			}
+			// then split into a b c and d.
+			int binarya[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+			int binaryb[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+			int binaryc[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+			int binaryd[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+			std::memcpy(binarya, binary, sizeof(binarya));
+			std::memcpy(binaryb, binary + 8, sizeof(binaryb));
+			std::memcpy(binaryc, binary + 16, sizeof(binaryc));
+			std::memcpy(binaryd, binary + 24, sizeof(binaryd));
+			int a = binaryToDecimal(binarya);
+			int b = binaryToDecimal(binaryb);
+			int c = binaryToDecimal(binaryc);
+			int d = binaryToDecimal(binaryd);
+			cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c
+				 << '.' << d << " (decimal value:" << outAddress << ", port: ";
+			if (outPort != -1) {
+				cout << outPort;
+			} else {
+				cout << "none";
+			}
+			cout << ")\n" << endl;
 		} else {
 			cout << "Invalid input: no valid IPv4 address found" << "\n"
 				 << endl;
