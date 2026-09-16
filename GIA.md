@@ -53,3 +53,46 @@ which I adopted into:
 		cout << "\n" << endl;
 
 "
+
+Using Gemini 3.6 flash on 9/16/2026
+promt: " how can I optimise this conversion between decimal to binary, its currently very slow, explain your code, avoid bit operations:  
+ for (size_t i = 0; i < outAddress; i++) { 
+         flip(binary, 31); 
+     } 
+
+ void flip(int binary[], int i) { 
+     // basicly we swap the 0 ->1 and 1->0, but 1->0 makes us swap the 
+     // next one as well 
+     if (binary[i] == 1) { 
+         binary[i] = 0; 
+         flip(binary, i - 1); 
+     } else { 
+         binary[i] = 1; 
+     } 
+ } "
+It explained that I could use the division by two method, and use this code:
+"
+void decimalToBinary(size_t value, int binary[32]) {
+    // 1. Initialize all bits to 0
+    for (int i = 0; i < 32; i++) {
+        binary[i] = 0;
+    }
+    
+    // 2. Extract binary digits from right to left using division and modulo
+    int index = 31;
+    while (value > 0 && index >= 0) {
+        binary[index] = value % 2;  // Remainder gives the current binary digit (0 or 1)
+        value = value / 2;          // Integer division drops the lowest digit
+        index--;
+    }
+}
+"
+which I adopted to
+"
+int index = 31;
+    while (value > 0 && index >= 0) {
+        binary[index] = value % 2;  
+        value = value / 2;         
+        index--;
+}
+"

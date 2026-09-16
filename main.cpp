@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -51,6 +52,61 @@ int charToInt(char i) {
 	default:
 		return -1;
 	}
+}
+/*Using Gemini 3.6 flash on 9/16/2026
+promt:
+ how can I optimise this conversion between decimal to binary, its currently
+very slow, explain your code, avoid bit operations:    for (size_t i = 0; i <
+outAddress; i++) {           flip(binary, 31);       } 
+
+ void flip(int binary[], int i) { 
+     // basicly we swap the 0 ->1 and 1->0, but 1->0 makes us swap the 
+     // next one as well 
+     if (binary[i] == 1) { 
+         binary[i] = 0; 
+         flip(binary, i - 1); 
+     } else { 
+         binary[i] = 1; 
+     } 
+ }"
+result:
+void decimalToBinary(size_t value, int binary[32]) {
+	// 1. Initialize all bits to 0
+	for (int i = 0; i < 32; i++) {
+		binary[i] = 0;
+	}
+
+	// 2. Extract binary digits from right to left using division and modulo
+	int index = 31;
+	while (value > 0 && index >= 0) {
+		binary[index] = value % 2;  // Remainder gives the current binary digit
+(0 or 1) value = value / 2;          // Integer division drops the lowest digit
+		index--;
+	}
+}
+	which I adopted by making it more generic and passing in the binary array;
+*/
+void decimalToBinary(unsigned long value, int index, int *binary) {
+	while (value > 0 && index >= 0) {
+		binary[index] = value % 2;
+		value = value / 2;
+		index--;
+	}
+}
+int binaryToDecimal(int *binary, int length) {
+	unsigned long a = 0;
+	int count = 0;
+	for (int i = length - 1; i >= 0; i--) {
+		if (binary[i] == 0) {
+			count += 1;
+			continue;
+		} else {
+			a += pow(2, count);
+			count += 1;
+			continue;
+		}
+	}
+	return a;
 }
 void accumilate(int &a, int &b, int &c, int &d, int colonCount, int &port,
 				char num, int numCount, int dotCount) {
@@ -111,22 +167,14 @@ unsigned long calcDecimal(int a, int b, int c, int d) {
 	// when combineing them already will add up to 32 bits so we need to
 	// convert a b c and d to binary, concatant, then convert to decimal
 	int binarya[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	for (size_t i = 0; i < a; i++) {
-		flip(binarya, 7);
-	}
-
 	int binaryb[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	for (size_t i = 0; i < b; i++) {
-		flip(binaryb, 7);
-	}
 	int binaryc[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	for (size_t i = 0; i < c; i++) {
-		flip(binaryc, 7);
-	}
 	int binaryd[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	for (size_t i = 0; i < d; i++) {
-		flip(binaryd, 7);
-	}
+
+	decimalToBinary(a, 7, binarya);
+	decimalToBinary(b, 7, binaryb);
+	decimalToBinary(c, 7, binaryc);
+	decimalToBinary(d, 7, binaryd);
 	// now we need to concat that to eachother
 	int finalbinanry[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 							0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -153,19 +201,8 @@ unsigned long calcDecimal(int a, int b, int c, int d) {
 	std::memcpy(finalbinanry + 8, binaryb, sizeof(binaryb));
 	std::memcpy(finalbinanry + 16, binaryc, sizeof(binaryc));
 	std::memcpy(finalbinanry + 24, binaryd, sizeof(binaryd));
-	unsigned long final = 0;
-	int count = 0;
-	for (int i = 31; i >= 0; i--) {
-		if (finalbinanry[i] == 0) {
-			count += 1;
-			continue;
-		} else {
-			final += pow(2, count);
-			count += 1;
-			continue;
-		}
-	}
-	return final;
+
+	return binaryToDecimal(finalbinanry, 32);
 }
 // Returns true if a valid address was found, false otherwise.
 // On success: outAddress holds the 32-bit value,
@@ -312,24 +349,38 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 	outAddress = 0;
 	return false;
 };
-int binaryToDecimal(int binary[8]) {
-	unsigned long a = 0;
-	int count = 0;
-	for (int i = 7; i >= 0; i--) {
-		if (binary[i] == 0) {
-			count += 1;
-			continue;
-		} else {
-			a += pow(2, count);
-			count += 1;
-			continue;
-		}
+
+void printIp(unsigned long outAddress, int outPort) {
+	// we are basiclly reversing calc decimal
+	// so first decimal -> binary
+	int binary[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	int index = 31;
+	unsigned long value = outAddress;
+	decimalToBinary(value, index, binary);
+	// then split into a b c and d.
+	int binarya[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+	int binaryb[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	int binaryc[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	int binaryd[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	std::memcpy(binarya, binary, sizeof(binarya));
+	std::memcpy(binaryb, binary + 8, sizeof(binaryb));
+	std::memcpy(binaryc, binary + 16, sizeof(binaryc));
+	std::memcpy(binaryd, binary + 24, sizeof(binaryd));
+	int a = binaryToDecimal(binarya, 8);
+	int b = binaryToDecimal(binaryb, 8);
+	int c = binaryToDecimal(binaryc, 8);
+	int d = binaryToDecimal(binaryd, 8);
+	cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c << '.' << d
+		 << " (decimal value:" << outAddress << ", port: ";
+	if (outPort != -1) {
+		cout << outPort;
+	} else {
+		cout << "none";
 	}
-	return a;
+	cout << ")\n" << endl;
 }
-// Takes in outAddress: a 32 bit represention of the ip, and outport
-// and prints the correct string
-void finalprint(unsigned long &outAddress, int &outPort) {}
 
 int main() {
 	// I used Gemini 3.6 flash on 9/7/26
@@ -357,35 +408,7 @@ int main() {
 		int outPort = 0;
 		if (extractIPv4(holding, outAddress, outPort)) {
 
-			// we are basiclly reversing calc decimal
-			// so first decimal -> binary
-			int binary[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-							  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-			for (size_t i = 0; i < outAddress; i++) {
-				flip(binary, 31);
-			}
-			// then split into a b c and d.
-			int binarya[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-			int binaryb[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-			int binaryc[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-			int binaryd[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-			std::memcpy(binarya, binary, sizeof(binarya));
-			std::memcpy(binaryb, binary + 8, sizeof(binaryb));
-			std::memcpy(binaryc, binary + 16, sizeof(binaryc));
-			std::memcpy(binaryd, binary + 24, sizeof(binaryd));
-			int a = binaryToDecimal(binarya);
-			int b = binaryToDecimal(binaryb);
-			int c = binaryToDecimal(binaryc);
-			int d = binaryToDecimal(binaryd);
-			cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c
-				 << '.' << d << " (decimal value:" << outAddress << ", port: ";
-			if (outPort != -1) {
-				cout << outPort;
-			} else {
-				cout << "none";
-			}
-			cout << ")\n" << endl;
+			printIp(outAddress, outPort);
 		} else {
 			cout << "Invalid input: no valid IPv4 address found" << "\n"
 				 << endl;
