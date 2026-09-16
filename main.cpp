@@ -9,11 +9,14 @@ using namespace std;
 // Return true if char is one of the following
 // 0-9, :, or .
 // Written by hand
-bool validChar(char c) {
-	if (isdigit(c)) {
+bool validChar(char c)
+{
+	if (isdigit(c))
+	{
 		return true;
 	}
-	switch (c) {
+	switch (c)
+	{
 	case '.':
 		return true;
 	case ':':
@@ -27,8 +30,10 @@ bool validChar(char c) {
 // accepts 0-9
 // returns -1 if invalid
 // Written by hand
-int charToInt(char i) {
-	switch (i) {
+int charToInt(char i)
+{
+	switch (i)
+	{
 	case '0':
 		return 0;
 	case '1':
@@ -86,21 +91,28 @@ void decimalToBinary(size_t value, int binary[32]) {
 }
 	which I adopted by making it more generic and passing in the binary array;
 */
-void decimalToBinary(unsigned long value, int index, int *binary) {
-	while (value > 0 && index >= 0) {
+void decimalToBinary(unsigned long value, int index, int *binary)
+{
+	while (value > 0 && index >= 0)
+	{
 		binary[index] = value % 2;
 		value = value / 2;
 		index--;
 	}
 }
-int binaryToDecimal(int *binary, int length) {
+unsigned long binaryToDecimal(int *binary, int length)
+{
 	unsigned long a = 0;
 	int count = 0;
-	for (int i = length - 1; i >= 0; i--) {
-		if (binary[i] == 0) {
+	for (int i = length - 1; i >= 0; i--)
+	{
+		if (binary[i] == 0)
+		{
 			count += 1;
 			continue;
-		} else {
+		}
+		else
+		{
 			a += pow(2, count);
 			count += 1;
 			continue;
@@ -109,9 +121,11 @@ int binaryToDecimal(int *binary, int length) {
 	return a;
 }
 void accumilate(int &a, int &b, int &c, int &d, int colonCount, int &port,
-				char num, int numCount, int dotCount) {
+				char num, int numCount, int dotCount)
+{
 	int realnum = charToInt(num);
-	switch (dotCount) {
+	switch (dotCount)
+	{
 		// the mess is that we are essentually going in reverse so we need to
 		// multiply the existing by ten then add the new one to it
 		// ie
@@ -131,30 +145,38 @@ void accumilate(int &a, int &b, int &c, int &d, int colonCount, int &port,
 		break;
 
 	case (3):
-		if (colonCount == 0) {
+		if (colonCount == 0)
+		{
 			d *= 10;
 			d += realnum;
 			break;
-		} else {
+		}
+		else
+		{
 			port *= 10;
 			port += realnum;
 			break;
 		}
 	}
 }
-void flip(int binary[], int i) {
+void flip(int binary[], int i)
+{
 	// basicly we swap the 0 ->1 and 1->0, but 1->0 makes us swap the
 	// next one as well
-	if (binary[i] == 1) {
+	if (binary[i] == 1)
+	{
 		binary[i] = 0;
 		flip(binary, i - 1);
-	} else {
+	}
+	else
+	{
 		binary[i] = 1;
 	}
 }
 // I had issues with this until I relised I was casting an unsigned long to an
 // int
-unsigned long calcDecimal(int a, int b, int c, int d) {
+unsigned long calcDecimal(int a, int b, int c, int d)
+{
 	// While this is hand coded the logic is not mine
 	// I used Gemini 3.6 flash on 9/7/26
 	// I used it to get the forumale for getting the decimal value of the ip
@@ -209,11 +231,14 @@ unsigned long calcDecimal(int a, int b, int c, int d) {
 // and outPort holds the port number, or -1 if no port was present.
 // On failure: outAddress is set to 0 and outPort is set to -1.
 bool extractIPv4(const std::string &str, unsigned long &outAddress,
-				 int &outPort) {
+				 int &outPort)
+{
 	// starting at each point in the string, try to parse an IPv4 address
 
-	for (size_t i = 0; i < str.length(); ++i) {
-		if (!validChar(str[i])) {
+	for (size_t i = 0; i < str.length(); ++i)
+	{
+		if (!validChar(str[i]))
+		{
 			continue;
 		}
 		// otherwise try to parse
@@ -223,11 +248,13 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 		// works
 		// one rule is that if the previues one is valid start, this one cannot
 		// be
-		if (i != 0 && isdigit(str[i]) && validChar(str[i - 1])) {
+		if (i != 0 && isdigit(str[i]) && validChar(str[i - 1]))
+		{
 			continue;
 		}
 		// it can only be a valid start if it is a digit
-		if (!isdigit(str[i])) {
+		if (!isdigit(str[i]))
+		{
 			continue;
 		}
 		// store current number of numbers
@@ -245,15 +272,18 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 		// store if we have the correct one or not
 		bool correct = false;
 
-		for (size_t j = i; j < str.length(); ++j) {
+		for (size_t j = i; j < str.length(); ++j)
+		{
 
 			// if its a number
-			if (isdigit(str[j])) {
+			if (isdigit(str[j]))
+			{
 				// if we have three numbers AND are not in the port secton
 				// break, if we have 4 numbers already and are in the port
 				// section break
 				if ((numCount > 2 && colonCount == 0) ||
-					(numCount > 4 && colonCount == 1)) {
+					(numCount > 4 && colonCount == 1))
+				{
 					break;
 				}
 				// this is sepret just due to complexity
@@ -261,24 +291,32 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 				// IF its zero AND numCount == 0 AND str[j] is a number then
 				// break
 				else if (charToInt(str[j]) == 0 && j != str.length() - 1 &&
-						 numCount == 0 && isdigit(str[j + 1])) {
+						 numCount == 0 && isdigit(str[j + 1]))
+				{
 					break;
-				} else if (dotCount == 3) {
+				}
+				else if (dotCount == 3)
+				{
 					// essentually we want to check if thier is a colon or
 					// dot if thier is a dot then break if colon then
 					// continue otherwise return true
 
 					// check if we are at the end of the string
-					if (j == str.length() - 1 || !validChar(str[j + 1])) {
+					if (j == str.length() - 1 || !validChar(str[j + 1]))
+					{
 						correct = true;
 						numCount += 1;
 						accumilate(a, b, c, d, colonCount, port, str[j],
 								   numCount, dotCount);
 						break;
-					} else if (str[j + 1] == '.') {
+					}
+					else if (str[j + 1] == '.')
+					{
 						// its invalid
 						break;
-					} else {
+					}
+					else
+					{
 						// accumilate
 						numCount += 1;
 
@@ -288,7 +326,8 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 					}
 				}
 
-				else {
+				else
+				{
 					// increment the numCount and continue
 					numCount += 1;
 					accumilate(a, b, c, d, colonCount, port, str[j], numCount,
@@ -296,50 +335,66 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 					continue;
 				}
 				// if its a dot
-			} else if (str[j] == '.') {
+			}
+			else if (str[j] == '.')
+			{
 				// if we have no numbers proceding, already have three dots,
 				// or already are in the port parsing part then break
-				if (numCount == 0 || dotCount > 2 || colonCount > 0) {
+				if (numCount == 0 || dotCount > 2 || colonCount > 0)
+				{
 					break;
-				} else {
+				}
+				else
+				{
 					// reset numCount and increment dotCount
 					numCount = 0;
 					dotCount += 1;
 				}
 			}
 			// this must be a colon
-			else if (str[j] == ':') {
+			else if (str[j] == ':')
+			{
 				// if we already have a colon or dont have at least 3 dots
 				// or dont have at least 1 number, break
-				if (colonCount > 0 || dotCount < 3 || numCount == 0) {
+				if (colonCount > 0 || dotCount < 3 || numCount == 0)
+				{
 					break;
-				} else {
+				}
+				else
+				{
 					portexists = true;
 					numCount = 0;
 					colonCount += 1;
 					continue;
 				}
-			} else {
+			}
+			else
+			{
 				break;
 			}
 		}
 		// if its correct
 
-		if (correct) {
+		if (correct)
+		{
 			// make sure a b c and d are all in the range 0-255
 			// we need to do this now because at the next step we assume that
 			// values are in these ranges so if we don't reject them we will
 			// have out of bounds issues
 			if (a < 0 || a > 255 || b < 0 || b > 255 || c < 0 || c > 255 ||
-				d < 0 || d > 255 || port < 0 || port > 65535) {
+				d < 0 || d > 255 || port < 0 || port > 65535)
+			{
 				// oops its actually wrong
 				continue;
 			}
 			outAddress = calcDecimal(a, b, c, d);
 
-			if (portexists) {
+			if (portexists)
+			{
 				outPort = port;
-			} else {
+			}
+			else
+			{
 				outPort = -1;
 			}
 			return true;
@@ -350,7 +405,8 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 	return false;
 };
 
-void printIp(unsigned long outAddress, int outPort) {
+void printIp(unsigned long outAddress, int outPort)
+{
 	// we are basiclly reversing calc decimal
 	// so first decimal -> binary
 	int binary[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -374,15 +430,20 @@ void printIp(unsigned long outAddress, int outPort) {
 	int d = binaryToDecimal(binaryd, 8);
 	cout << "Extracted IPv4 address:" << a << '.' << b << '.' << c << '.' << d
 		 << " (decimal value:" << outAddress << ", port: ";
-	if (outPort != -1) {
+	if (outPort != -1)
+	{
 		cout << outPort;
-	} else {
+	}
+	else
+	{
 		cout << "none";
 	}
-	cout << ")\n" << endl;
+	cout << ")\n"
+		 << endl;
 }
 
-int main() {
+int main()
+{
 	// I used Gemini 3.6 flash on 9/7/26
 	// prompt: "how do I get user input with spaces in c++"
 	// it have me:
@@ -395,21 +456,27 @@ int main() {
 	std::cout << "Hello, " << fullName << "!\n";
 	*/
 	// which I adopted by using the right promt and variable names
-	while (true) {
+	while (true)
+	{
 		std::cout << "Enter a string (or 'END' to quit): ";
 		string holding;
 		std::getline(std::cin, holding);
-		cout << "\n" << endl;
-		if (holding == "END") {
+		cout << "\n"
+			 << endl;
+		if (holding == "END")
+		{
 			cout << "Program terminated." << endl;
 			return 0;
 		}
 		unsigned long outAddress = 0;
 		int outPort = 0;
-		if (extractIPv4(holding, outAddress, outPort)) {
+		if (extractIPv4(holding, outAddress, outPort))
+		{
 
 			printIp(outAddress, outPort);
-		} else {
+		}
+		else
+		{
 			cout << "Invalid input: no valid IPv4 address found" << "\n"
 				 << endl;
 		}
