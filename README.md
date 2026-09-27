@@ -12,6 +12,5 @@ example:
 Extracted IPv4 address: 192.168.1.1 (decimal value: 3232235777, port: none)
 END
 Program terminated.
-
 ```
 This testing infistructure is mostly based off how some previus classes did grading.  
