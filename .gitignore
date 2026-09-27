@@ -1,1 +1,7 @@
 build
+test/result.txt
+test/onlyout.txt
+test/input.txt
+test/correctout.txt
+test/textout.txt
+a.out

@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
+            "name": "Python Debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "outputextract.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Launch cfile ",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceRoot}/build/out.exe",
+            "program": "${workspaceRoot}/build/out",
             "args": [],
             "cwd": "${workspaceRoot}"
         }
