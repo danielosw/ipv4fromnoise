@@ -79,12 +79,13 @@ void decimalToBinary(size_t value, int binary[32]) {
 	// 2. Extract binary digits from right to left using division and modulo
 	int index = 31;
 	while (value > 0 && index >= 0) {
-		binary[index] = value % 2;  // Remainder gives the current binary digit
-(0 or 1) value = value / 2;          // Integer division drops the lowest digit
+		binary[index] = value % 2;  // Remainder gives the current binary digit(0 or 1)
+		value = value / 2;          // Integer division drops the lowest digit
 		index--;
 	}
 }
-	which I adopted by making it more generic and passing in the binary array;
+	which I adopted by making it more generic and passing in the binary array
+sepretly, so we can have other function with arbatrarally sized arrays use it;
 */
 void decimalToBinary(unsigned long value, int index, int *binary) {
 	while (value > 0 && index >= 0) {
@@ -204,6 +205,9 @@ unsigned long calcDecimal(int a, int b, int c, int d) {
 // On success: outAddress holds the 32-bit value,
 // and outPort holds the port number, or -1 if no port was present.
 // On failure: outAddress is set to 0 and outPort is set to -1.
+// technically hand coded but calcdecimal is not, and calcdecimal was orginally
+// part of this and was the only ai part before I move it out into its own
+// function so it could also be used elsewhere.
 bool extractIPv4(const std::string &str, unsigned long &outAddress,
 				 int &outPort) {
 	// starting at each point in the string, try to parse an IPv4 address
@@ -346,7 +350,8 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 	outAddress = 0;
 	return false;
 };
-
+// coded by hand, but its basicly a reviersal of calc decimal which does use ai
+// so I don't know how to handle this one
 void printIp(unsigned long outAddress, int outPort) {
 	// we are basiclly reversing calc decimal
 	// so first decimal -> binary

@@ -14,4 +14,4 @@ END
 Program terminated.
 ```
 This testing infistructure is mostly based off how some previus classes did grading.  
-But much more fleshed out, I kinda of got a little caried away and completly changed it to not actually ever output files, only use python subproccesses.  
+But much more fleshed out, I kinda of got a little caried away and completly changed it to not actually ever output files, only use python subproccesses.   
