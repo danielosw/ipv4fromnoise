@@ -352,6 +352,7 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 };
 // coded by hand, but its basicly a reviersal of calc decimal which does use ai
 // so I don't know how to handle this one
+// in terms of disclosure
 void printIp(unsigned long outAddress, int outPort) {
 	// we are basiclly reversing calc decimal
 	// so first decimal -> binary
