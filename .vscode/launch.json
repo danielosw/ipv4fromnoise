@@ -8,7 +8,7 @@
             "name": "Python Debugger",
             "type": "debugpy",
             "request": "launch",
-            "program": "outputextract.py",
+            "program": "./test/textio.py",
             "console": "integratedTerminal"
         },
         {
