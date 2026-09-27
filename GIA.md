@@ -2,6 +2,8 @@ The way I generally tried to use it is to ask for help for specific parts, not t
 The reason for this is I find it tends to struggle more when you give it large chunks of code it needs to juggle in its context window.  
 Also, I put hand written at the top of the function if I wrote it entirly by hand with zero AI.  
 The formating of this doc was done by me, I have been using markdown for notes and have gotten used to embedding code blocks.  
+I understand all code I am submitting.  
+I have made a whole testing setup with python and it all works.  
 So here is a list of times I uses AI.  
 
 
