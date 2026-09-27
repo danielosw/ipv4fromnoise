@@ -93,6 +93,9 @@ void decimalToBinary(unsigned long value, int index, int *binary) {
 		index--;
 	}
 }
+// hand written code
+// algorithim is the classic way of doing it by hand
+// which is 1001 = 2^0+0^1+0^2+2^3=9
 unsigned long binaryToDecimal(int *binary, int length) {
 	unsigned long a = 0;
 	int count = 0;
@@ -108,6 +111,7 @@ unsigned long binaryToDecimal(int *binary, int length) {
 	}
 	return a;
 }
+// hand written
 void accumilate(int &a, int &b, int &c, int &d, int colonCount, int &port,
 				char num, int numCount, int dotCount) {
 	int realnum = charToInt(num);
@@ -142,20 +146,10 @@ void accumilate(int &a, int &b, int &c, int &d, int colonCount, int &port,
 		}
 	}
 }
-void flip(int binary[], int i) {
-	// basicly we swap the 0 ->1 and 1->0, but 1->0 makes us swap the
-	// next one as well
-	if (binary[i] == 1) {
-		binary[i] = 0;
-		flip(binary, i - 1);
-	} else {
-		binary[i] = 1;
-	}
-}
+
 // I had issues with this until I relised I was casting an unsigned long to an
 // int
 unsigned long calcDecimal(int a, int b, int c, int d) {
-	// While this is hand coded the logic is not mine
 	// I used Gemini 3.6 flash on 9/7/26
 	// I used it to get the forumale for getting the decimal value of the ip
 	// address I asked:  "how do you get the 32 bit decimal of an ip
@@ -170,7 +164,9 @@ unsigned long calcDecimal(int a, int b, int c, int d) {
 	int binaryb[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	int binaryc[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 	int binaryd[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
+	// Note: this function is also ai, go to it to see the promt and response
+	// for it. originally it was duplicated four times but I relized with some
+	// slight tweaks I could make it just a function
 	decimalToBinary(a, 7, binarya);
 	decimalToBinary(b, 7, binaryb);
 	decimalToBinary(c, 7, binaryc);
@@ -332,7 +328,8 @@ bool extractIPv4(const std::string &str, unsigned long &outAddress,
 			// have out of bounds issues
 			if (a < 0 || a > 255 || b < 0 || b > 255 || c < 0 || c > 255 ||
 				d < 0 || d > 255 || port < 0 || port > 65535) {
-				// oops its actually wrong
+				// oops its actually invalid
+				// correct is reset every loop so just continue
 				continue;
 			}
 			outAddress = calcDecimal(a, b, c, d);
@@ -357,6 +354,10 @@ void printIp(unsigned long outAddress, int outPort) {
 					  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int index = 31;
 	unsigned long value = outAddress;
+	// Note: this function is also ai, go to it to see the prompt and response
+	// or look at gia.md
+
+	// Convert the decimal into binary
 	decimalToBinary(value, index, binary);
 	// then split into a b c and d.
 	int binarya[8] = {0, 0, 0, 0, 0, 0, 0, 0};
